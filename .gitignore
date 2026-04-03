@@ -1,0 +1,19 @@
+# Environment variables — never commit real env files
+.env
+.env.local
+.env.*.local
+
+# Local secrets — filled-in copy of actions.env, never commit
+actions.env
+
+# Build output
+dist/
+
+# Dependencies
+node_modules/
+
+# Coverage
+coverage/
+
+# OS
+.DS_Store

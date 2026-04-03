@@ -1,0 +1,20 @@
+services:
+  notifications-svc:
+    image: ${DOCKER_USERNAME}/notification-svc:${IMAGE_TAG:-latest}
+    container_name: notifications-svc
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      PORT: ${PORT}
+      DATABASE_URL: ${DATABASE_URL}
+      RABBITMQ_URL: ${RABBITMQ_URL}
+      BULKSMS_API_KEY: ${BULKSMS_API_KEY}
+      BULKSMS_SENDER_ID: ${BULKSMS_SENDER_ID}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      MAIL_FROM: ${MAIL_FROM}
+    networks:
+      - katisha-net
+
+networks:
+  katisha-net:
+    external: true

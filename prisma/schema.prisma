@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum NotifChannel {
+  sms
+  mail
+}
+
+enum NotifStatus {
+  sent
+  failed
+  dead
+}
+
+model NotificationLog {
+  id           String       @id @default(uuid())
+  channel      NotifChannel
+  type         String       @db.VarChar(60)  // e.g. "otp.sms", "security.login_new_device"
+  recipient    String       @db.VarChar(255) // phone_number for sms, email for mail
+  status       NotifStatus
+  attempts     Int          @default(1)
+  provider_ref String?      @db.VarChar(255) // trackId (bulksms.rw) or Resend message ID
+  error        String?      @db.Text
+  payload      Json // full event body for debugging / support lookups
+  created_at   DateTime     @default(now())
+  updated_at   DateTime     @updatedAt
+
+  @@index([channel, status])
+  @@index([recipient])
+  @@map("notification_logs")
+}
