@@ -7,19 +7,20 @@ type OtpMailEvent = Extract<MailEvent, { type: 'otp.mail' }>;
 export const renderOtpMail = (e: OtpMailEvent): MailContent => {
   const s = getMailStrings(e.locale).otp;
   const c = getMailStrings(e.locale).common;
+  const ps = s.purposes[e.purpose];
   const minutes = Math.ceil(e.expires_in_seconds / 60);
   return {
-    subject: s.subject,
+    subject: ps.subject,
     html: layout({
       locale: e.locale,
-      preheader: s.preheader(minutes),
+      preheader: ps.preheader(minutes),
       body: `
-        ${h1(s.h1)}
+        ${h1(ps.h1)}
         ${p(s.greeting(e.first_name))}
-        ${p(s.body1)}
+        ${p(ps.body1)}
         ${codeBlock(e.code)}
         ${p(s.expiry(minutes))}
-        ${noticeBox(s.notice)}
+        ${noticeBox(ps.notice)}
         ${pLast(c.sign_off)}
       `,
     }),

@@ -35,7 +35,7 @@ export type MailEvent = (
   // ── OTP delivery ──────────────────────────────────────────────────────────
   | {
       type: 'otp.mail';
-      purpose: 'password_reset';
+      purpose: 'password_reset' | '2fa';
       email: string;
       first_name: string;
       code: string;

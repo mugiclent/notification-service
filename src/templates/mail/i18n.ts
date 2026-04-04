@@ -14,14 +14,18 @@ type CommonStrings = {
   footer: FooterStrings;
 };
 
-type OtpStrings = {
+type OtpPurposeStrings = {
   subject: string;
   preheader: (min: number) => string;
   h1: string;
-  greeting: (name: string) => string;
   body1: string;
-  expiry: (min: number) => string;
   notice: string;
+};
+
+type OtpStrings = {
+  purposes: Record<'password_reset' | '2fa', OtpPurposeStrings>;
+  greeting: (name: string) => string;
+  expiry: (min: number) => string;
 };
 
 type WelcomeStrings = {
@@ -156,18 +160,29 @@ const translations: Record<Locale, MailLocaleStrings> = {
       support_note: 'Ku bindi bisobanuro, vugana na <a href="mailto:support@katisha.online" style="color:#0a0a0a;">serivisi yacu yo gufasha</a> vuba ukore konti yawe.',
       cta_fallback: 'Buto ntikora? Kopi na pasiti iyi link ku rubuga rwo gushakisha (nka Google Chrome):',
       footer: {
-        rights: `Amategeko n'amabwiriza birubahirizwa`,
+        rights: `Uburenganzira bwose bwubahirijwe`,
         received: 'Wabonye ubu butumwa kubera ibikorwa kuri konti yawe ya Katisha.',
       },
     },
     otp: {
-      subject: `Kode yo Guhindura ijambo ryawe ry'ibanga`,
-      preheader: (min) => `Kode yawe y'iminota ${min} iri aha.`,
-      h1: `Subiramo ijambo ryawe ry'ibanga`,
+      purposes: {
+        password_reset: {
+          subject: `Kode yo Guhindura ijambo ryawe ry'ibanga`,
+          preheader: (min) => `Kode yawe y'iminota ${min} iri aha.`,
+          h1: `Hindura ijambo ryawe ry'ibanga`,
+          body1: "Twabonye ubusabe bwanyu bwo guhindura ijambo ry'ibanga rya konti yanyu ya Katisha. Koresha kode iri hasi — ntabwo igumaho igihe kinini.",
+          notice: `Niba utasabye guhindura ijambo ry'ibanga, irengagize ubu butumwa. Ijambo ryawe ry'ibanga <strong>ntiryahindutse</strong>.`,
+        },
+        '2fa': {
+          subject: 'Kode yo kwemeza kwinjira kwawe kuri Katisha',
+          preheader: (min) => `Kode yawe y'iminota ${min} yo kwemeza kwinjira iri aha.`,
+          h1: 'Emeza kwinjira kwawe',
+          body1: 'Koresha kode iri hasi kugira ngo wemeze kwinjira kwawe kuri Katisha.',
+          notice: 'Niba utasabye kwinjira, fata ingamba zo kurinda konti yawe vuba.',
+        },
+      },
       greeting: (name) => `Muraho ${name},`,
-      body1: "Twabonye ubusabe bwanyu bwo guhindura ijambo ry'ibanga rya konti yanyu ya Katisha. Koresha kode iri hasi — ntabwo igumaho igihe kinini.",
-      expiry: (min) => `Kode irangira mu minota <strong>${min}</strong>. Ntuyisangize undi muntu.`,
-      notice: `Niba utasabye guhindura ijambo ry'ibanga, irengagize ubu butumwa. Ijambo ryawe ry'ibanga <strong>ntiryahindutse</strong>.`,
+      expiry: (min) => `Kode irarangira mu minota <strong>${min}</strong>. Ntuyisangize undi muntu.`,
     },
     welcome: {
       subject: (name) => `Murakaza neza kuri Katisha, ${name}!`,
@@ -193,7 +208,7 @@ const translations: Record<Locale, MailLocaleStrings> = {
       body1: (org) => `Ikaze! <strong>${org}</strong> yasuzumwe yemezwa kuri Katisha.`,
       body2: 'Kanda buto iri hasi urangize gufunguza konti yawe utangire.',
       cta: 'Fungura Konti',
-      expiry: (hrs) => `Iyi link irangira mu masaha <strong>${hrs}</strong>.`,
+      expiry: (hrs) => `Iyi link irarangira mu masaha <strong>${hrs}</strong>.`,
     },
     security: {
       login_new_device: {
@@ -291,13 +306,24 @@ const translations: Record<Locale, MailLocaleStrings> = {
       },
     },
     otp: {
-      subject: 'Your Katisha password reset code',
-      preheader: (min) => `Your ${min}-minute verification code is inside.`,
-      h1: 'Reset your password',
+      purposes: {
+        password_reset: {
+          subject: 'Your Katisha password reset code',
+          preheader: (min) => `Your ${min}-minute verification code is inside.`,
+          h1: 'Reset your password',
+          body1: "We received a request to reset your Katisha password. Use the code below — it's only valid for a short window.",
+          notice: "If you didn't request a password reset, you can safely ignore this email. Your password has <strong>not</strong> been changed.",
+        },
+        '2fa': {
+          subject: 'Your Katisha sign-in verification code',
+          preheader: (min) => `Your ${min}-minute sign-in code is inside.`,
+          h1: 'Verify your sign-in',
+          body1: 'Use the code below to verify your sign-in to Katisha.',
+          notice: "If you didn't request this, secure your account immediately.",
+        },
+      },
       greeting: (name) => `Hi ${name},`,
-      body1: "We received a request to reset your Katisha password. Use the code below — it's only valid for a short window.",
       expiry: (min) => `This code expires in <strong>${min} minute${min !== 1 ? 's' : ''}</strong>. Do not share it with anyone.`,
-      notice: "If you didn't request a password reset, you can safely ignore this email. Your password has <strong>not</strong> been changed.",
     },
     welcome: {
       subject: (name) => `Welcome to Katisha, ${name}!`,
@@ -421,13 +447,24 @@ const translations: Record<Locale, MailLocaleStrings> = {
       },
     },
     otp: {
-      subject: 'Votre code de réinitialisation de mot de passe Katisha',
-      preheader: (min) => `Votre code de vérification valable ${min} minute${min !== 1 ? 's' : ''} est à l'intérieur.`,
-      h1: 'Réinitialisez votre mot de passe',
+      purposes: {
+        password_reset: {
+          subject: 'Votre code de réinitialisation de mot de passe Katisha',
+          preheader: (min) => `Votre code de vérification valable ${min} minute${min !== 1 ? 's' : ''} est à l'intérieur.`,
+          h1: 'Réinitialisez votre mot de passe',
+          body1: "Nous avons reçu une demande de réinitialisation de votre mot de passe Katisha. Utilisez le code ci-dessous — il n'est valide que pour une courte durée.",
+          notice: "Si vous n'avez pas demandé de réinitialisation de mot de passe, vous pouvez ignorer cet e-mail. Votre mot de passe <strong>n'a pas</strong> été modifié.",
+        },
+        '2fa': {
+          subject: 'Votre code de vérification de connexion Katisha',
+          preheader: (min) => `Votre code de connexion valable ${min} minute${min !== 1 ? 's' : ''} est à l'intérieur.`,
+          h1: 'Vérifiez votre connexion',
+          body1: 'Utilisez le code ci-dessous pour vérifier votre connexion à Katisha.',
+          notice: "Si vous n'êtes pas à l'origine de cette demande, sécurisez votre compte immédiatement.",
+        },
+      },
       greeting: (name) => `Bonjour ${name},`,
-      body1: "Nous avons reçu une demande de réinitialisation de votre mot de passe Katisha. Utilisez le code ci-dessous — il n'est valide que pour une courte durée.",
       expiry: (min) => `Ce code expire dans <strong>${min} minute${min !== 1 ? 's' : ''}</strong>. Ne le partagez avec personne.`,
-      notice: "Si vous n'avez pas demandé de réinitialisation de mot de passe, vous pouvez ignorer cet e-mail. Votre mot de passe <strong>n'a pas</strong> été modifié.",
     },
     welcome: {
       subject: (name) => `Bienvenue sur Katisha, ${name} !`,

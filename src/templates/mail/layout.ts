@@ -152,7 +152,7 @@ export const layout = (opts: {
                 style="background-color:#fafafa;border-top:1px solid ${BORDER};
                        padding:28px 48px;text-align:center;font-family:${FONT};">
               <p style="margin:0 0 6px;font-size:12px;color:${MUTED};">
-                &copy; ${year} Katisha &middot; ${footer.rights}
+                &copy; ${year} Katisha Online Ltd &middot; ${footer.rights}
               </p>
               <p style="margin:0;font-size:12px;color:#a3a3a3;">
                 ${footer.received}
