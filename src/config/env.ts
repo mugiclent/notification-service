@@ -5,9 +5,10 @@ const schema = Joi.object({
   NODE_ENV: Joi.string().valid('development', 'test', 'production').required(),
   PORT: Joi.number().default(8100),
 
-  DATABASE_URL: Joi.string().uri().required(),
+  DB_PASSWORD: Joi.string().required(),
 
-  RABBITMQ_URL: Joi.string().uri().required(),
+  RABBITMQ_USER: Joi.string().required(),
+  RABBITMQ_PASSWORD: Joi.string().required(),
 
   BULKSMS_API_KEY: Joi.string().required(),
   BULKSMS_SENDER_ID: Joi.string().default('KATISHA'),
@@ -26,8 +27,9 @@ if (error) {
 export const env = value as {
   NODE_ENV: 'development' | 'test' | 'production';
   PORT: number;
-  DATABASE_URL: string;
-  RABBITMQ_URL: string;
+  DB_PASSWORD: string;
+  RABBITMQ_USER: string;
+  RABBITMQ_PASSWORD: string;
   BULKSMS_API_KEY: string;
   BULKSMS_SENDER_ID: string;
   RESEND_API_KEY: string;

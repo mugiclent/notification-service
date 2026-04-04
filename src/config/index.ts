@@ -7,11 +7,11 @@ export const config = {
   isTest: env.NODE_ENV === 'test',
 
   db: {
-    url: env.DATABASE_URL,
+    url: `postgresql://notification_svc:${env.DB_PASSWORD}@pgbouncer:6432/notification_db?pgbouncer=true&connect_timeout=5&pool_timeout=5`,
   },
 
   rabbitmq: {
-    url: env.RABBITMQ_URL,
+    url: `amqp://${env.RABBITMQ_USER}:${env.RABBITMQ_PASSWORD}@rabbitmq:5672`,
   },
 
   bulksms: {

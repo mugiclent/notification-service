@@ -130,7 +130,7 @@ export const layout = (opts: {
 
           <!-- ── Header ─────────────────────────────────────────────────────── -->
           <tr>
-            <td style="background-color:${DARK};padding:32px 48px;text-align:center;">
+            <td style="background-color:#000000;padding:32px 48px;text-align:center;">
               <img src="${LOGO_URL}" alt="Katisha" width="130" height="auto"
                    style="border:0;display:block;height:auto;margin:0 auto;
                           max-width:130px;-ms-interpolation-mode:bicubic;" />

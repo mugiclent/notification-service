@@ -23,7 +23,7 @@ type OtpPurposeStrings = {
 };
 
 type OtpStrings = {
-  purposes: Record<'password_reset' | '2fa', OtpPurposeStrings>;
+  purposes: Record<'password_reset' | '2fa' | 'email_verification', OtpPurposeStrings>;
   greeting: (name: string) => string;
   expiry: (min: number) => string;
 };
@@ -180,6 +180,13 @@ const translations: Record<Locale, MailLocaleStrings> = {
           body1: 'Koresha kode iri hasi kugira ngo wemeze kwinjira kwawe kuri Katisha.',
           notice: 'Niba utasabye kwinjira, fata ingamba zo kurinda konti yawe vuba.',
         },
+        email_verification: {
+          subject: 'Emeza aderesi ya imeli yawe ya Katisha',
+          preheader: (min) => `Kode yawe y'iminota ${min} yo kwemeza imeli iri aha.`,
+          h1: 'Emeza imeli yawe',
+          body1: 'Koresha kode iri hasi kugira ngo wemeze aderesi ya imeli yawe kuri Katisha.',
+          notice: 'Niba utasabye kwemeza imeli, irengagize ubu butumwa.',
+        },
       },
       greeting: (name) => `Muraho ${name},`,
       expiry: (min) => `Kode irarangira mu minota <strong>${min}</strong>. Ntuyisangize undi muntu.`,
@@ -321,6 +328,13 @@ const translations: Record<Locale, MailLocaleStrings> = {
           body1: 'Use the code below to verify your sign-in to Katisha.',
           notice: "If you didn't request this, secure your account immediately.",
         },
+        email_verification: {
+          subject: 'Verify your Katisha email address',
+          preheader: (min) => `Your ${min}-minute email verification code is inside.`,
+          h1: 'Verify your email address',
+          body1: 'Use the code below to verify your email address on Katisha.',
+          notice: "If you didn't request this, you can safely ignore this email.",
+        },
       },
       greeting: (name) => `Hi ${name},`,
       expiry: (min) => `This code expires in <strong>${min} minute${min !== 1 ? 's' : ''}</strong>. Do not share it with anyone.`,
@@ -461,6 +475,13 @@ const translations: Record<Locale, MailLocaleStrings> = {
           h1: 'Vérifiez votre connexion',
           body1: 'Utilisez le code ci-dessous pour vérifier votre connexion à Katisha.',
           notice: "Si vous n'êtes pas à l'origine de cette demande, sécurisez votre compte immédiatement.",
+        },
+        email_verification: {
+          subject: 'Vérifiez votre adresse e-mail Katisha',
+          preheader: (min) => `Votre code de vérification d'e-mail valable ${min} minute${min !== 1 ? 's' : ''} est à l'intérieur.`,
+          h1: 'Vérifiez votre adresse e-mail',
+          body1: 'Utilisez le code ci-dessous pour vérifier votre adresse e-mail sur Katisha.',
+          notice: "Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet e-mail.",
         },
       },
       greeting: (name) => `Bonjour ${name},`,
