@@ -13,6 +13,7 @@ services:
       BULKSMS_SENDER_ID: ${BULKSMS_SENDER_ID}
       RESEND_API_KEY: ${RESEND_API_KEY}
       MAIL_FROM: ${MAIL_FROM}
+      LOGO_URL: ${LOGO_URL}
     networks:
       - katisha-net
 
