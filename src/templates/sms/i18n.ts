@@ -10,7 +10,7 @@ type OtpSmsStrings = {
 type SmsLocaleStrings = {
   otp: OtpSmsStrings;
   welcome: (name: string) => string;
-  invite: (name: string, link: string, hrs: number) => string;
+  invite: (name: string, invitedBy: string, link: string, hrs: number) => string;
   org_approved: (org: string, link: string, hrs: number) => string;
   security: {
     login_new_device: (name: string, device?: string) => string;
@@ -45,8 +45,8 @@ const translations: Record<Locale, SmsLocaleStrings> = {
     },
     welcome: (name) =>
       `Murakaza neza kuri Katisha, ${name}! Konti yawe iteguye. Injira ubu utangire gukoresha serivisi.`,
-    invite: (name, link, hrs) =>
-      `Muraho ${name}, watumiwe kujya kuri Katisha. Emera ubutumwe bwawe hano: ${link} (burangira mu masaha ${hrs}).`,
+    invite: (name, invitedBy, link, hrs) =>
+      `Muraho ${name}, ${invitedBy} yagutumiye kujya kuri Katisha. Emera ubutumwe bwawe hano: ${link} (burangira mu masaha ${hrs}).`,
     org_approved: (org, link, hrs) =>
       `Amakuru meza! ${org} yemejwe kuri Katisha. Shyiraho umuryango wawe hano: ${link} (irangira mu masaha ${hrs}).`,
     security: {
@@ -88,8 +88,8 @@ const translations: Record<Locale, SmsLocaleStrings> = {
     },
     welcome: (name) =>
       `Welcome to Katisha, ${name}! Your account is ready. Sign in now to get started.`,
-    invite: (name, link, hrs) =>
-      `Hi ${name}, you've been invited to join Katisha. Accept your invitation here: ${link} (expires in ${hrs}h).`,
+    invite: (name, invitedBy, link, hrs) =>
+      `Hi ${name}, ${invitedBy} has invited you to join Katisha. Accept your invitation here: ${link} (expires in ${hrs}h).`,
     org_approved: (org, link, hrs) =>
       `Congratulations! ${org} has been approved on Katisha. Set up your organisation here: ${link} (expires in ${hrs}h).`,
     security: {
@@ -131,8 +131,8 @@ const translations: Record<Locale, SmsLocaleStrings> = {
     },
     welcome: (name) =>
       `Bienvenue sur Katisha, ${name} ! Votre compte est prêt. Connectez-vous maintenant pour commencer.`,
-    invite: (name, link, hrs) =>
-      `Bonjour ${name}, vous avez été invité(e) à rejoindre Katisha. Acceptez votre invitation ici : ${link} (expire dans ${hrs}h).`,
+    invite: (name, invitedBy, link, hrs) =>
+      `Bonjour ${name}, ${invitedBy} vous a invité(e) à rejoindre Katisha. Acceptez votre invitation ici : ${link} (expire dans ${hrs}h).`,
     org_approved: (org, link, hrs) =>
       `Félicitations ! ${org} a été approuvé(e) sur Katisha. Configurez votre organisation ici : ${link} (expire dans ${hrs}h).`,
     security: {

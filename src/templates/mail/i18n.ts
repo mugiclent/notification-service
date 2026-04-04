@@ -42,7 +42,7 @@ type InviteStrings = {
   preheader: string;
   h1: string;
   greeting: (name: string) => string;
-  body1: string;
+  body1: (invitedBy: string) => string;
   cta: string;
   expiry: (hrs: number) => string;
 };
@@ -157,7 +157,7 @@ const translations: Record<Locale, MailLocaleStrings> = {
   rw: {
     common: {
       sign_off: 'Ikipe ya Katisha',
-      support_note: 'Ku bindi bisobanuro, vugana na <a href="mailto:support@katisha.online" style="color:#0a0a0a;">serivisi yacu yo gufasha</a> vuba ukore konti yawe.',
+      support_note: `Ku bindi bisobanuro, vugana na <a href="mailto:support@katisha.online" style="color:#0a0a0a;">serivisi y'ubufasha</a> vuba urinde konti yawe.`,
       cta_fallback: 'Buto ntikora? Kopi na pasiti iyi link ku rubuga rwo gushakisha (nka Google Chrome):',
       footer: {
         rights: `Uburenganzira bwose bwubahirijwe`,
@@ -197,7 +197,7 @@ const translations: Record<Locale, MailLocaleStrings> = {
       preheader: "Watumiwe! — emera ubutumire mbere y'uko bugera ku iherezo.",
       h1: 'Watumiwe kuri Katisha',
       greeting: (name) => `Muraho ${name},`,
-      body1: 'Umuntu yagutumiye kujya kuri Katisha. Kanda buto iri hasi wemere ubutumire maze ukore konti yawe.',
+      body1: (invitedBy) => `<strong>${invitedBy}</strong> yagutumiye kujya kuri Katisha. Kanda buto iri hasi wemere ubutumire maze ukore konti yawe.`,
       cta: 'Emera Ubutumire',
       expiry: (hrs) => `Ubutumire burarangira mu masaha <strong>${hrs}</strong>.`,
     },
@@ -206,7 +206,7 @@ const translations: Record<Locale, MailLocaleStrings> = {
       preheader: (org) => `Amakuru meza — ${org} yemejwe kuri Katisha`,
       h1: 'Kompanyi yawe yemejwe!',
       body1: (org) => `Ikaze! <strong>${org}</strong> yasuzumwe yemezwa kuri Katisha.`,
-      body2: 'Kanda buto iri hasi urangize gufunguza konti yawe utangire.',
+      body2: 'Mukande buto iri hasi murangize gufunguza konti yanyu maze utangire.',
       cta: 'Fungura Konti',
       expiry: (hrs) => `Iyi link irarangira mu masaha <strong>${hrs}</strong>.`,
     },
@@ -288,7 +288,7 @@ const translations: Record<Locale, MailLocaleStrings> = {
         preheader: (org) => `Ubusabe bwanyu bwa ${org} buri gusuzumwa.`,
         h1: 'Ubusabe twabwakiriye',
         body1: 'Murakoze gutanga ubusabe bwo gukoresha urubuga rwa Katisha.',
-        body2: (org, type, email) => `Twabonye ubusabe bwa <strong>${org}</strong> (${type}). Itsinda ryacu rirasuzuma ubu busabe kandi rizasubiza kuri <strong>${email}</strong> bitarenze itatu y'akazi.`,
+        body2: (org, type, email) => `Twabonye ubusabe bwa <strong>${org}</strong> (${type}). Itsinda ryacu rirasuzuma ubu busabe kandi rizasubiza kuri <strong>${email}</strong> bitarenze iminsi itatu y'akazi.`,
         notice: 'Nta kindi musabwa gukora. Turabasubiza vuba.',
       },
     },
@@ -338,7 +338,7 @@ const translations: Record<Locale, MailLocaleStrings> = {
       preheader: "You've been invited — accept before your invitation expires.",
       h1: "You're invited to Katisha",
       greeting: (name) => `Hi ${name},`,
-      body1: 'Someone has invited you to join Katisha. Click the button below to accept your invitation and set up your account.',
+      body1: (invitedBy) => `<strong>${invitedBy}</strong> has invited you to join Katisha. Click the button below to accept your invitation and set up your account.`,
       cta: 'Accept Invitation',
       expiry: (hrs) => `This invitation expires in <strong>${hrs} hour${hrs !== 1 ? 's' : ''}</strong>.`,
     },
@@ -479,7 +479,7 @@ const translations: Record<Locale, MailLocaleStrings> = {
       preheader: "Vous avez été invité(e) — acceptez avant l'expiration de votre invitation.",
       h1: 'Vous êtes invité(e) sur Katisha',
       greeting: (name) => `Bonjour ${name},`,
-      body1: "Quelqu'un vous a invité(e) à rejoindre Katisha. Cliquez sur le bouton ci-dessous pour accepter votre invitation et configurer votre compte.",
+      body1: (invitedBy) => `<strong>${invitedBy}</strong> vous a invité(e) à rejoindre Katisha. Cliquez sur le bouton ci-dessous pour accepter votre invitation et configurer votre compte.`,
       cta: "Accepter l'invitation",
       expiry: (hrs) => `Cette invitation expire dans <strong>${hrs} heure${hrs !== 1 ? 's' : ''}</strong>.`,
     },

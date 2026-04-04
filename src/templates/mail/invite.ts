@@ -16,7 +16,7 @@ export const renderInviteMail = (e: InviteMailEvent): MailContent => {
       body: `
         ${h1(s.h1)}
         ${p(s.greeting(e.first_name))}
-        ${p(s.body1)}
+        ${p(s.body1(e.invited_by))}
         ${ctaButton(e.invite_link, s.cta)}
         ${p(s.expiry(hours), 'font-size:14px;color:#737373;')}
         ${noticeBox(`${c.cta_fallback}<br />

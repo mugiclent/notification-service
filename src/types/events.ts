@@ -15,7 +15,7 @@ export type SmsEvent = (
     }
   // ── Welcome / onboarding ──────────────────────────────────────────────────
   | { type: 'welcome.sms'; phone_number: string; first_name: string }
-  | { type: 'invite.sms'; phone_number: string; first_name: string; invite_link: string; expires_in_seconds: number }
+  | { type: 'invite.sms'; phone_number: string; first_name: string; invited_by: string; invite_link: string; expires_in_seconds: number }
   | { type: 'org_approved.sms'; phone_number: string; org_name: string; invite_link: string; expires_in_seconds: number }
   // ── Security events ───────────────────────────────────────────────────────
   | { type: 'security.login_new_device'; phone_number: string; first_name: string; device?: string }
@@ -43,7 +43,7 @@ export type MailEvent = (
     }
   // ── Welcome / onboarding ──────────────────────────────────────────────────
   | { type: 'welcome.mail'; email: string; first_name: string }
-  | { type: 'invite.mail'; email: string; first_name: string; invite_link: string; expires_in_seconds: number }
+  | { type: 'invite.mail'; email: string; first_name: string; invited_by: string; invite_link: string; expires_in_seconds: number }
   | { type: 'org_approved.mail'; email: string; org_name: string; invite_link: string; expires_in_seconds: number }
   // ── Security events ───────────────────────────────────────────────────────
   | { type: 'security.login_new_device'; email: string; first_name: string; device?: string }
