@@ -14,6 +14,7 @@ const schema = Joi.object({
 
   RESEND_API_KEY: Joi.string().required(),
   MAIL_FROM: Joi.string().required(),
+  LOGO_URL: Joi.string().uri().required(),
 });
 
 const { error, value } = schema.validate(process.env, { allowUnknown: true });
@@ -31,4 +32,5 @@ export const env = value as {
   BULKSMS_SENDER_ID: string;
   RESEND_API_KEY: string;
   MAIL_FROM: string;
+  LOGO_URL: string;
 };

@@ -37,6 +37,7 @@ export const withRetry = async <T>(
 
       // Unrecoverable — propagate immediately without further retries
       if (e.retryable === false) {
+        Object.assign(e, { attempts: attempt });
         throw e;
       }
 
@@ -44,5 +45,6 @@ export const withRetry = async <T>(
     }
   }
 
+  Object.assign(lastError, { attempts: maxAttempts });
   throw lastError;
 };

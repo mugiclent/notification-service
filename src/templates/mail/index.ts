@@ -5,11 +5,9 @@ import { renderInviteMail } from './invite.js';
 import { renderOrgApprovedMail } from './org-approved.js';
 import { renderSecurityMail } from './security.js';
 import { renderOrgMail } from './org.js';
+import type { MailContent } from './layout.js';
 
-export interface MailContent {
-  subject: string;
-  html: string;
-}
+export type { MailContent } from './layout.js';
 
 /**
  * Dispatch a mail event to the correct template function.

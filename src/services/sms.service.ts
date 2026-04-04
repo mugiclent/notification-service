@@ -65,9 +65,9 @@ export const SmsService = {
       attempts = a;
       providerRef = result.trackId;
     } catch (err) {
-      const e = err as Error;
+      const e = err as Error & { attempts?: number };
       lastError = e.message;
-      attempts = 3;
+      attempts = e.attempts ?? 3;
 
       await prisma.notificationLog.create({
         data: {

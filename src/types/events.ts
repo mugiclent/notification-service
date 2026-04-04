@@ -2,7 +2,9 @@
 // Keep in sync manually when new event types are added to publishers.ts.
 // Source of truth: user-service/src/utils/publishers.ts
 
-export type SmsEvent =
+export type Locale = 'rw' | 'en' | 'fr';
+
+export type SmsEvent = (
   // ── OTP delivery ──────────────────────────────────────────────────────────
   | {
       type: 'otp.sms';
@@ -26,9 +28,10 @@ export type SmsEvent =
   | { type: 'org.suspended'; phone_number: string; org_name: string }
   | { type: 'org.rejected'; phone_number: string; org_name: string; reason?: string }
   | { type: 'org.cooperative_approved'; phone_number: string; org_name: string }
-  | { type: 'org.contact_verified'; phone_number: string; org_name: string };
+  | { type: 'org.contact_verified'; phone_number: string; org_name: string }
+) & { locale?: Locale };
 
-export type MailEvent =
+export type MailEvent = (
   // ── OTP delivery ──────────────────────────────────────────────────────────
   | {
       type: 'otp.mail';
@@ -54,7 +57,8 @@ export type MailEvent =
   // ── Org application flow ──────────────────────────────────────────────────
   | { type: 'org.contact_otp'; email: string; first_name: string; org_name: string; code: string; expires_in_seconds: number }
   | { type: 'org.contact_verified'; email: string; org_name: string; first_name: string }
-  | { type: 'org.application_received'; email: string; org_name: string; contact_email: string; org_type: string };
+  | { type: 'org.application_received'; email: string; org_name: string; contact_email: string; org_type: string }
+) & { locale?: Locale };
 
 // The full wire message shape (envelope added by user-service publishers)
 export type SmsMessage = SmsEvent & {

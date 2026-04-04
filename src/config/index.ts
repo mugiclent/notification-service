@@ -24,4 +24,8 @@ export const config = {
     apiKey: env.RESEND_API_KEY,
     from: env.MAIL_FROM,
   },
+
+  mail: {
+    logoUrl: env.LOGO_URL,
+  },
 } as const;

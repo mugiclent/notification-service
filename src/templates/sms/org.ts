@@ -1,19 +1,14 @@
 import type { SmsEvent } from '../../types/events.js';
+import { getSmsStrings } from './i18n.js';
 
 type OrgSmsEvent = Extract<SmsEvent, { type: `org.${string}` }>;
 
 export const renderOrgSms = (e: OrgSmsEvent): string => {
+  const s = getSmsStrings(e.locale).org;
   switch (e.type) {
-    case 'org.suspended':
-      return `Your organisation ${e.org_name} has been suspended on Katisha. Contact support for more information.`;
-
-    case 'org.rejected':
-      return `Your organisation ${e.org_name} was not approved on Katisha${e.reason ? `: ${e.reason}` : ''}. Contact support if you have questions.`;
-
-    case 'org.cooperative_approved':
-      return `Great news! ${e.org_name} has been approved as a cooperative on Katisha. Log in to get started.`;
-
-    case 'org.contact_verified':
-      return `The contact for ${e.org_name} has been verified on Katisha.`;
+    case 'org.suspended':             return s.suspended(e.org_name);
+    case 'org.rejected':              return s.rejected(e.org_name, e.reason);
+    case 'org.cooperative_approved':  return s.cooperative_approved(e.org_name);
+    case 'org.contact_verified':      return s.contact_verified(e.org_name);
   }
 };

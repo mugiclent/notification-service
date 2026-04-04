@@ -4,9 +4,28 @@ import { config } from '../config/index.js';
 import { startSmsSubscriber } from '../subscribers/sms.subscriber.js';
 import { startMailSubscriber } from '../subscribers/mail.subscriber.js';
 
+const RETRY_DELAY_MS = 3_000;
+
 let connection: ChannelModel;
 let smsChannel: Channel;
 let mailChannel: Channel;
+let isShuttingDown = false;
+
+const sleep = (ms: number): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, ms));
+
+/** Retries indefinitely until the broker accepts a connection. */
+const connectWithRetry = async (): Promise<void> => {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      connection = await amqplib.connect(config.rabbitmq.url);
+      return;
+    } catch {
+      console.warn(`[rabbitmq] Broker not ready (attempt ${attempt}) — retrying in ${RETRY_DELAY_MS / 1000}s`);
+      await sleep(RETRY_DELAY_MS);
+    }
+  }
+};
 
 /**
  * Topology (asserted idempotently on startup):
@@ -28,7 +47,7 @@ let mailChannel: Channel;
  * Queue arguments are immutable once declared.
  */
 export const initRabbitMQ = async (): Promise<void> => {
-  connection = await amqplib.connect(config.rabbitmq.url);
+  await connectWithRetry();
 
   smsChannel  = await connection.createChannel();
   mailChannel = await connection.createChannel();
@@ -37,7 +56,7 @@ export const initRabbitMQ = async (): Promise<void> => {
   await smsChannel.prefetch(1);
   await mailChannel.prefetch(1);
 
-  // Assert topology (idempotent — safe if already created by user-service or definitions.json)
+  // Assert topology (idempotent — safe if already created by definitions.json)
   for (const ch of [smsChannel, mailChannel]) {
     await ch.assertExchange('notifications.dlx', 'fanout', { durable: true });
     await ch.assertQueue('notifications.dead', { durable: true });
@@ -58,9 +77,22 @@ export const initRabbitMQ = async (): Promise<void> => {
   await startMailSubscriber(mailChannel);
 
   console.warn('[rabbitmq] Connected — smsChannel and mailChannel consuming');
+
+  // Reconnect automatically on unexpected broker disconnect
+  connection.on('close', () => {
+    if (isShuttingDown) return;
+    console.warn('[rabbitmq] Connection lost — reconnecting...');
+    setTimeout(() => { void initRabbitMQ(); }, RETRY_DELAY_MS);
+  });
+
+  connection.on('error', (err: Error) => {
+    // 'close' will fire after 'error' — reconnect logic lives there
+    console.warn('[rabbitmq] Connection error:', err.message);
+  });
 };
 
 export const closeRabbitMQ = async (): Promise<void> => {
+  isShuttingDown = true;
   await smsChannel?.close();
   await mailChannel?.close();
   await connection?.close();

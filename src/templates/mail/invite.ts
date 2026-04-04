@@ -1,27 +1,28 @@
 import type { MailEvent } from '../../types/events.js';
-import type { MailContent } from './index.js';
+import { layout, ctaButton, noticeBox, h1, p, pLast, type MailContent } from './layout.js';
+import { getMailStrings } from './i18n.js';
 
 type InviteMailEvent = Extract<MailEvent, { type: 'invite.mail' }>;
 
 export const renderInviteMail = (e: InviteMailEvent): MailContent => {
+  const s = getMailStrings(e.locale).invite;
+  const c = getMailStrings(e.locale).common;
   const hours = Math.ceil(e.expires_in_seconds / 3600);
   return {
-    subject: "You've been invited to Katisha",
-    html: `
-      <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:32px">
-        <h2 style="color:#1a1a1a">You're invited!</h2>
-        <p>Hi ${e.first_name},</p>
-        <p>You've been invited to join Katisha. Click the link below to accept your invitation:</p>
-        <div style="margin:24px 0">
-          <a href="${e.invite_link}" style="background:#0070f3;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold">
-            Accept Invitation
-          </a>
-        </div>
-        <p style="color:#666;font-size:14px">This link expires in ${hours} hour${hours !== 1 ? 's' : ''}.</p>
-        <p style="color:#666;font-size:14px">If you can't click the button, copy this link: ${e.invite_link}</p>
-        <hr style="border:none;border-top:1px solid #eee;margin:24px 0">
-        <p style="color:#888;font-size:12px">The Katisha Team</p>
-      </div>
-    `.trim(),
+    subject: s.subject,
+    html: layout({
+      locale: e.locale,
+      preheader: s.preheader,
+      body: `
+        ${h1(s.h1)}
+        ${p(s.greeting(e.first_name))}
+        ${p(s.body1)}
+        ${ctaButton(e.invite_link, s.cta)}
+        ${p(s.expiry(hours), 'font-size:14px;color:#737373;')}
+        ${noticeBox(`${c.cta_fallback}<br />
+          <a href="${e.invite_link}" style="color:#0a0a0a;word-break:break-all;">${e.invite_link}</a>`)}
+        ${pLast(c.sign_off)}
+      `,
+    }),
   };
 };
