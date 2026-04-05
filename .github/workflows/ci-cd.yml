@@ -93,13 +93,19 @@ jobs:
               --domain=http://localhost:8080 \
               --plain --silent)
 
-            infisical run \
+            DB_PASSWORD=$(infisical secrets get DB_PASSWORD \
               --token="$INFISICAL_TOKEN" \
               --projectId=${{ secrets.INFISICAL_PROJECT_ID }} \
               --env=dev \
               --path=/notification-svc \
               --domain=http://localhost:8080 \
-              -- npx prisma db push --schema prisma/schema.prisma --skip-generate
+              --plain 2>/dev/null)
+
+            docker run --rm \
+              --network katisha-net \
+              -e DATABASE_URL="postgresql://notification_svc:${DB_PASSWORD}@pgbouncer:6432/notification_db?pgbouncer=true&connect_timeout=5&pool_timeout=5" \
+              ${{ secrets.DOCKER_USERNAME }}/notification-svc:${{ needs.build-and-push.outputs.image_tag }} \
+              npm run db:push
 
             infisical run \
               --token="$INFISICAL_TOKEN" \
