@@ -99,6 +99,14 @@ jobs:
               --env=dev \
               --path=/notification-svc \
               --domain=http://localhost:8080 \
+              -- npx prisma db push --schema prisma/schema.prisma --skip-generate
+
+            infisical run \
+              --token="$INFISICAL_TOKEN" \
+              --projectId=${{ secrets.INFISICAL_PROJECT_ID }} \
+              --env=dev \
+              --path=/notification-svc \
+              --domain=http://localhost:8080 \
               -- docker compose up -d --no-deps --pull always notifications-svc
 
             echo "Waiting for notifications-svc to be healthy..."
