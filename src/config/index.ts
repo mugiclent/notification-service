@@ -14,10 +14,9 @@ export const config = {
     url: `amqp://${env.RABBITMQ_USER}:${env.RABBITMQ_PASSWORD}@rabbitmq:5672`,
   },
 
-  bulksms: {
-    apiKey: env.BULKSMS_API_KEY,
-    senderId: env.BULKSMS_SENDER_ID,
-    endpoint: 'https://api.prod.bulksms.rw/api/v2/bulksms/send-sms',
+  itecsms: {
+    apiKey: env.ITECSMS_API_KEY,
+    endpoint: 'https://itecsms.rw/api/sendsms',
   },
 
   resend: {

@@ -10,8 +10,7 @@ const schema = Joi.object({
   RABBITMQ_USER: Joi.string().required(),
   RABBITMQ_PASSWORD: Joi.string().required(),
 
-  BULKSMS_API_KEY: Joi.string().required(),
-  BULKSMS_SENDER_ID: Joi.string().default('KATISHA'),
+  ITECSMS_API_KEY: Joi.string().required(),
 
   RESEND_API_KEY: Joi.string().required(),
   MAIL_FROM: Joi.string().required(),
@@ -30,8 +29,7 @@ export const env = value as {
   DB_PASSWORD: string;
   RABBITMQ_USER: string;
   RABBITMQ_PASSWORD: string;
-  BULKSMS_API_KEY: string;
-  BULKSMS_SENDER_ID: string;
+  ITECSMS_API_KEY: string;
   RESEND_API_KEY: string;
   MAIL_FROM: string;
   LOGO_URL: string;

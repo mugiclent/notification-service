@@ -29,7 +29,6 @@ export const renderSms = (event: SmsEvent): string => {
 
     case 'security.login_new_device':
     case 'security.password_changed':
-    case 'security.all_sessions_revoked':
     case 'security.account_suspended':
     case 'security.2fa_enabled':
     case 'security.2fa_disabled':

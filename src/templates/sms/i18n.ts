@@ -15,7 +15,6 @@ type SmsLocaleStrings = {
   security: {
     login_new_device: (name: string, device?: string) => string;
     password_changed: (name: string) => string;
-    all_sessions_revoked: (name: string) => string;
     account_suspended: (name: string) => string;
     '2fa_enabled': (name: string) => string;
     '2fa_disabled': (name: string) => string;
@@ -36,42 +35,40 @@ const translations: Record<Locale, SmsLocaleStrings> = {
   rw: {
     otp: {
       purposes: {
-        phone_verification: 'emeza nimero yawe ya telefoni',
-        '2fa': 'emeza kwinjira kwawe',
-        password_reset: 'subiramo ijambo ryawe banga',
+        phone_verification: 'kwemeza nimero yawe ya telefoni',
+        '2fa': 'kwemeza kwinjira kwawe',
+        password_reset: `guhindura ijambo ryawe ry'ibanga`,
       },
       template: (purpose, code, min) =>
-        `Kode yawe ya Katisha yo ${purpose} ni: ${code}. Ikora mu minota ${min}. Ntuyisangire n'umuntu.`,
+        `Kode ya Katisha yo ${purpose} ni: ${code}. Imara iminota ${min}. Ntuyisangize undi muntu.`,
     },
     welcome: (name) =>
-      `Murakaza neza kuri Katisha, ${name}! Konti yawe iteguye. Injira ubu utangire gukoresha serivisi.`,
+      `Murakaza neza kuri Katisha, ${name}! Konti yawe yafunguwe neza. Injira utangire gukatisha.`,
     invite: (name, invitedBy, link, hrs) =>
-      `Muraho ${name}, ${invitedBy} yagutumiye kujya kuri Katisha. Emera ubutumwe bwawe hano: ${link} (burangira mu masaha ${hrs}).`,
+      `Muraho ${name}, ${invitedBy} yagutumiye kujya kuri Katisha. Emera ubutumire bwawe hano: ${link} (Burarangira mu masaha ${hrs}).`,
     org_approved: (org, link, hrs) =>
-      `Amakuru meza! ${org} yemejwe kuri Katisha. Shyiraho umuryango wawe hano: ${link} (irangira mu masaha ${hrs}).`,
+      `Amakuru meza! ${org} yemejwe kuri Katisha. Rangiza gukora konti ya ${org} hano: ${link} (Birarangira mu masaha ${hrs}).`,
     security: {
       login_new_device: (name, device) =>
-        `Muraho ${name}, konti yawe ya Katisha yinjiriwe uhereye ${device ? `ku ${device}` : 'ku gikoresho gishya'}. Niba ari wewe, nta gikozwe kirakenewe. Niba atari wewe, kora konti yawe vuba.`,
+        `Muraho ${name}, konti yawe ya Katisha yinjiriwe ${device ? `kuri ${device}` : 'ku gikoresho gishya'}. Niba ari wowe, irengagize ubu butumwa. Niba atari wowe, rinda konti yawe vuba.`,
       password_changed: (name) =>
-        `Muraho ${name}, ijambo banga rya Katisha yawe ryahindutse. Niba utabikoze, vugana na serivisi yo gufasha vuba.`,
-      all_sessions_revoked: (name) =>
-        `Muraho ${name}, ibikorwa byose bya Katisha byawe birangiye. Injira nanone ukomeze.`,
+        `Muraho ${name}, ijambo ry'ibanga ryawe rya Katisha ryahindutse. Niba utabikoze, vugana na serivisi yacu y'ubufasha vuba.`,
       account_suspended: (name) =>
-        `Muraho ${name}, konti yawe ya Katisha yahagaritswe. Vugana na serivisi yo gufasha kugira amakuru.`,
+        `Muraho ${name}, konti yawe ya Katisha yahagaritswe. Vugana na serivisi yacu y'ubufasha kugira amakuru.`,
       '2fa_enabled': (name) =>
-        `Muraho ${name}, kwinjira kabiri bishyizweho kuri konti yawe ya Katisha.`,
+        `Muraho ${name}, Kwinjira ukoresheje ibimenyetso birenga kimwe byemejwe kuri konti yawe ya Katisha.`,
       '2fa_disabled': (name) =>
-        `Muraho ${name}, kwinjira kabiri bivanywemo kuri konti yawe ya Katisha. Bisubizemo kugira konti yawe irindwaho.`,
+        `Muraho ${name}, Kwinjira ukoresheje ibimenyetso birenga kimwe bivanyweho kuri konti yawe ya Katisha. Turagusaba kubishyiraho nanone kugira ngo konti yawe irindwe neza.`,
     },
     org: {
       suspended: (org) =>
-        `Umuryango wawe ${org} wahagaritswe kuri Katisha. Vugana na serivisi yo gufasha kugira amakuru.`,
+        `Kompanyi yawe ${org} yahagaritswe kuri Katisha. ku bindi bisobanuro vugana na serivisi yacu y'ubufasha.`,
       rejected: (org, reason) =>
-        `Umuryango wawe ${org} ntabwo wemejwe kuri Katisha${reason ? `: ${reason}` : ''}. Vugana na serivisi yo gufasha niba ufite ibibazo.`,
+        `Kompanyi yawe ${org} ntabwo yemejwe kuri Katisha ku mpamvu zikurira:${reason ? `: ${reason}` : ''}. ku bindi bisobanuro vugana na serivisi yacu y'ubufasha.`,
       cooperative_approved: (org) =>
-        `Amakuru meza! ${org} yemejwe nk'ikoperative kuri Katisha. Injira utangire.`,
+        `Amakuru meza! ${org} yemeye ko uri umunyamuryango kuri Katisha. Turagubiza bidatinze maze utangire gukatisha.`,
       contact_verified: (org) =>
-        `Umuntu wa ${org} yemejwe kuri Katisha.`,
+        `Nomero ikoreshwa na ${org} yemejwe kuri Katisha. Niyo muzajya mubonaho amakuru y'ingenzi yerekeye ${org}.`,
     },
   },
 
@@ -97,8 +94,6 @@ const translations: Record<Locale, SmsLocaleStrings> = {
         `Hi ${name}, your Katisha account was accessed from ${device ? `${device}` : 'a new device'}. If this wasn't you, secure your account immediately.`,
       password_changed: (name) =>
         `Hi ${name}, your Katisha password was changed. If you didn't do this, contact support immediately.`,
-      all_sessions_revoked: (name) =>
-        `Hi ${name}, all active sessions on your Katisha account have been ended. Sign in again to continue.`,
       account_suspended: (name) =>
         `Hi ${name}, your Katisha account has been suspended. Contact support for assistance.`,
       '2fa_enabled': (name) =>
@@ -140,8 +135,6 @@ const translations: Record<Locale, SmsLocaleStrings> = {
         `Bonjour ${name}, votre compte Katisha a été accédé depuis ${device ? device : 'un nouvel appareil'}. Si ce n'était pas vous, sécurisez votre compte immédiatement.`,
       password_changed: (name) =>
         `Bonjour ${name}, votre mot de passe Katisha a été modifié. Si vous n'êtes pas à l'origine de cette action, contactez le support immédiatement.`,
-      all_sessions_revoked: (name) =>
-        `Bonjour ${name}, toutes les sessions actives de votre compte Katisha ont été terminées. Reconnectez-vous pour continuer.`,
       account_suspended: (name) =>
         `Bonjour ${name}, votre compte Katisha a été suspendu. Contactez le support pour obtenir de l'aide.`,
       '2fa_enabled': (name) =>

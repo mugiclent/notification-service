@@ -4,46 +4,32 @@ import { withRetry } from '../utils/retry.js';
 import type { SmsEvent } from '../types/events.js';
 import { renderSms } from '../templates/sms/index.js';
 
-interface BulkSmsSuccessResponse {
-  trackId: string;
-  smsCount: number;
+interface ItecSmsResponse {
+  status: number;
   message: string;
 }
 
-const sendViaBulkSms = async (
+const sendViaItecSms = async (
   phoneNumber: string,
   message: string,
-): Promise<BulkSmsSuccessResponse> => {
-  const res = await fetch(config.bulksms.endpoint, {
+): Promise<void> => {
+  const res = await fetch(config.itecsms.endpoint, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      apiKey: config.bulksms.apiKey,
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      senderId: config.bulksms.senderId,
-      recipients: [phoneNumber],
+      key: config.itecsms.apiKey,
       message,
+      recipients: [phoneNumber],
     }),
   });
 
-  if (res.status === 201) {
-    return res.json() as Promise<BulkSmsSuccessResponse>;
-  }
+  const data = await res.json() as ItecSmsResponse;
 
-  let body = '';
-  try {
-    body = await res.text();
-  } catch { /* ignore */ }
+  if (data.status === 200) return;
 
   const err = Object.assign(
-    new Error(`bulksms.rw HTTP ${res.status}: ${body}`),
-    {
-      // 4xx (except 429) = unrecoverable client error — bad phone, inactive key, etc.
-      // 429 = rate limited — retryable
-      // 5xx = server error — retryable
-      retryable: res.status === 429 || res.status >= 500,
-    },
+    new Error(`itecsms.rw error ${data.status}: ${data.message}`),
+    { retryable: res.status === 429 || res.status >= 500 },
   );
 
   throw err;
@@ -53,17 +39,15 @@ export const SmsService = {
   async handle(event: SmsEvent): Promise<void> {
     const message = renderSms(event);
     const recipient = event.phone_number;
-    let providerRef: string | undefined;
     let attempts = 0;
     let lastError: string | undefined;
 
     try {
-      const { result, attempts: a } = await withRetry(
-        () => sendViaBulkSms(recipient, message),
+      const { attempts: a } = await withRetry(
+        () => sendViaItecSms(recipient, message),
         3,
       );
       attempts = a;
-      providerRef = result.trackId;
     } catch (err) {
       const e = err as Error & { attempts?: number };
       lastError = e.message;
@@ -91,7 +75,6 @@ export const SmsService = {
         recipient,
         status: 'sent',
         attempts,
-        provider_ref: providerRef,
         payload: event as object,
       },
     });

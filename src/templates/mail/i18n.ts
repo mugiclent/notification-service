@@ -256,7 +256,7 @@ const translations: Record<Locale, MailLocaleStrings> = {
         h1: 'Kwinjira ukoresheje ibimenyetso birenga kimwe bivanyweho',
         greeting: (name) => `Muraho ${name},`,
         body1: 'Kwinjira ukoresheje ibimenyetso birenga kimwe bivanyweho kuri konti yawe ya Katisha.',
-        body2: 'Turagusaba kubishyiraho nanone kugirango konti yawe irindwe neza.',
+        body2: 'Turagusaba kubishyiraho nanone kugira ngo konti yawe irindwe neza.',
       },
     },
     org: {

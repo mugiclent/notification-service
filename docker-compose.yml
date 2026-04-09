@@ -1,5 +1,8 @@
 services:
   notifications-svc:
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: ${DOCKER_USERNAME}/notification-svc:${IMAGE_TAG:-latest}
     container_name: notifications-svc
     restart: unless-stopped
@@ -9,8 +12,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       RABBITMQ_USER: ${RABBITMQ_USER}
       RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
-      BULKSMS_API_KEY: ${BULKSMS_API_KEY}
-      BULKSMS_SENDER_ID: ${BULKSMS_SENDER_ID}
+      ITECSMS_API_KEY: ${ITECSMS_API_KEY}
       RESEND_API_KEY: ${RESEND_API_KEY}
       MAIL_FROM: ${MAIL_FROM}
       LOGO_URL: ${LOGO_URL}

@@ -20,7 +20,6 @@ export type SmsEvent = (
   // ── Security events ───────────────────────────────────────────────────────
   | { type: 'security.login_new_device'; phone_number: string; first_name: string; device?: string }
   | { type: 'security.password_changed'; phone_number: string; first_name: string }
-  | { type: 'security.all_sessions_revoked'; phone_number: string; first_name: string }
   | { type: 'security.account_suspended'; phone_number: string; first_name: string }
   | { type: 'security.2fa_enabled'; phone_number: string; first_name: string }
   | { type: 'security.2fa_disabled'; phone_number: string; first_name: string }
