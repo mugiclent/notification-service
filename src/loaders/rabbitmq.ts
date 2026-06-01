@@ -28,22 +28,26 @@ const connectWithRetry = async (): Promise<void> => {
 };
 
 /**
- * Topology (asserted idempotently on startup):
+ * Inbox/command pattern topology:
  *
- *  notifications exchange (topic)
+ *  notifications exchange (topic) — pre-defined in definitions.json, checked not asserted
  *    ├── sms  queue  ←── routing key: sms.notifications  (DLX → notifications.dlx)
  *    └── mail queue  ←── routing key: mail.notifications (DLX → notifications.dlx)
  *
- *  notifications.dlx exchange (fanout) — dead-letter sink
+ *  notifications.dlx exchange (fanout) — pre-defined, dead-letter sink
  *    └── notifications.dead queue ←── all rejected messages land here
+ *
+ * The `notifications` exchange is the command inbox router for this service.
+ * Publishers (user-service, trip-service, etc.) address commands here using a
+ * routing key that identifies the delivery channel (sms.*, mail.*, push.*).
+ * This service owns its queues and bindings; it only checks the exchange exists.
  *
  * Two channels — one per queue — so SMS retries don't block mail delivery.
  * Each channel has prefetch(1): holds exactly one UNACKED message at a time.
  * If the process crashes mid-retry, the broker requeues the unacked message.
  *
  * NOTE: If sms/mail queues were previously created WITHOUT x-dead-letter-exchange,
- * they must be deleted in the RabbitMQ management UI before restarting, then
- * restart the rabbitmq container to recreate them from definitions.json.
+ * they must be deleted in the RabbitMQ management UI before restarting.
  * Queue arguments are immutable once declared.
  */
 export const initRabbitMQ = async (): Promise<void> => {
@@ -56,22 +60,27 @@ export const initRabbitMQ = async (): Promise<void> => {
   await smsChannel.prefetch(1);
   await mailChannel.prefetch(1);
 
-  // Assert topology (idempotent — safe if already created by definitions.json)
-  for (const ch of [smsChannel, mailChannel]) {
-    await ch.assertExchange('notifications.dlx', 'fanout', { durable: true });
-    await ch.assertQueue('notifications.dead', { durable: true });
-    await ch.bindQueue('notifications.dead', 'notifications.dlx', '');
-    await ch.assertExchange('notifications', 'topic', { durable: true });
-  }
+  // Verify pre-defined exchanges exist (broker asserts these from definitions.json at startup).
+  // checkExchange throws a channel error if the exchange is absent — we do NOT recreate it.
+  await smsChannel.checkExchange('notifications');
+  await smsChannel.checkExchange('notifications.dlx');
 
+  // Dead-letter sink — owned by this service, not pre-defined in definitions.json
+  await smsChannel.assertQueue('notifications.dead', { durable: true });
+  await smsChannel.bindQueue('notifications.dead', 'notifications.dlx', '');
+
+  // Inbox queues — this service declares and owns these, bound to the notifications exchange
   await smsChannel.assertQueue('sms', {
     durable: true,
     arguments: { 'x-dead-letter-exchange': 'notifications.dlx' },
   });
+  await smsChannel.bindQueue('sms', 'notifications', 'sms.notifications');
+
   await mailChannel.assertQueue('mail', {
     durable: true,
     arguments: { 'x-dead-letter-exchange': 'notifications.dlx' },
   });
+  await mailChannel.bindQueue('mail', 'notifications', 'mail.notifications');
 
   await startSmsSubscriber(smsChannel);
   await startMailSubscriber(mailChannel);
