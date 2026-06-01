@@ -16,6 +16,7 @@ node_modules/
 coverage/
 
 # Local dev — not for production
+docker-compose.override.yml
 docker-compose.local.yml
 Dockerfile.local
 local/
