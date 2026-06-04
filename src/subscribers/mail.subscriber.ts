@@ -18,13 +18,15 @@ export const startMailSubscriber = async (channel: Channel): Promise<void> => {
     void (async () => {
       try {
         await MailService.handle(event);
-        channel.ack(msg);
+        try { channel.ack(msg); } catch { /* channel closed; broker requeues */ }
       } catch (err) {
         console.error('[mail.subscriber] Delivery failed — sending to DLX', {
           type: event.type,
           error: (err as Error).message,
         });
-        channel.nack(msg, false, false);
+        // Channel may have closed while the handler was running (broker restart).
+        // Swallow the nack error — the broker already requeued the unacked message.
+        try { channel.nack(msg, false, false); } catch { /* channel closed */ }
       }
     })();
   });
