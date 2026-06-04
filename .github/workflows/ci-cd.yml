@@ -8,6 +8,7 @@ on:
 
 env:
   IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/notification-svc
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   checks:
@@ -101,11 +102,20 @@ jobs:
               --domain=http://localhost:8080 \
               --plain 2>/dev/null)
 
+            # First deploy only: baseline the existing schema so migrate deploy
+            # doesn't try to recreate tables that already exist.
+            # Fails harmlessly on subsequent deploys — the || true absorbs it.
             docker run --rm \
               --network katisha-net \
-              -e DATABASE_URL="postgresql://notification_svc:${DB_PASSWORD}@pgbouncer:6432/notification_db?pgbouncer=true&connect_timeout=5&pool_timeout=5" \
+              -e DIRECT_DATABASE_URL="postgresql://notification_svc:${DB_PASSWORD}@db:5432/notification_db" \
               ${{ secrets.DOCKER_USERNAME }}/notification-svc:${{ needs.build-and-push.outputs.image_tag }} \
-              npm run db:push
+              npx prisma migrate resolve --applied 20260604161711_init || true
+
+            docker run --rm \
+              --network katisha-net \
+              -e DIRECT_DATABASE_URL="postgresql://notification_svc:${DB_PASSWORD}@db:5432/notification_db" \
+              ${{ secrets.DOCKER_USERNAME }}/notification-svc:${{ needs.build-and-push.outputs.image_tag }} \
+              npm run db:deploy
 
             infisical run \
               --token="$INFISICAL_TOKEN" \
