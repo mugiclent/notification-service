@@ -42,6 +42,8 @@ export const SmsService = {
     let attempts = 0;
     let lastError: string | undefined;
 
+    let deliveryError: (Error & { attempts?: number }) | undefined;
+
     try {
       const { attempts: a } = await withRetry(
         () => sendViaItecSms(recipient, message),
@@ -52,31 +54,27 @@ export const SmsService = {
       const e = err as Error & { attempts?: number };
       lastError = e.message;
       attempts = e.attempts ?? 3;
+      deliveryError = e;
+    }
 
+    // Logging is best-effort — a transient DB/PgBouncer failure must not nack
+    // a message that was already delivered (or already failed delivery).
+    try {
       await prisma.notificationLog.create({
         data: {
           channel: 'sms',
           type: event.type,
           recipient,
-          status: 'dead',
+          status: deliveryError ? 'dead' : 'sent',
           attempts,
           error: lastError,
           payload: event as object,
         },
       });
-
-      throw e;
+    } catch (logErr) {
+      console.error('[sms.service] Failed to write notification log', logErr);
     }
 
-    await prisma.notificationLog.create({
-      data: {
-        channel: 'sms',
-        type: event.type,
-        recipient,
-        status: 'sent',
-        attempts,
-        payload: event as object,
-      },
-    });
+    if (deliveryError) throw deliveryError;
   },
 };

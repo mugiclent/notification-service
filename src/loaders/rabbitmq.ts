@@ -10,22 +10,10 @@ let connection: ChannelModel;
 let smsChannel: Channel;
 let mailChannel: Channel;
 let isShuttingDown = false;
+let isReconnecting = false;
 
 const sleep = (ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
-
-/** Retries indefinitely until the broker accepts a connection. */
-const connectWithRetry = async (): Promise<void> => {
-  for (let attempt = 1; ; attempt++) {
-    try {
-      connection = await amqplib.connect(config.rabbitmq.url);
-      return;
-    } catch {
-      console.warn(`[rabbitmq] Broker not ready (attempt ${attempt}) — retrying in ${RETRY_DELAY_MS / 1000}s`);
-      await sleep(RETRY_DELAY_MS);
-    }
-  }
-};
 
 /**
  * Inbox/command pattern topology:
@@ -50,8 +38,26 @@ const connectWithRetry = async (): Promise<void> => {
  * they must be deleted in the RabbitMQ management UI before restarting.
  * Queue arguments are immutable once declared.
  */
-export const initRabbitMQ = async (): Promise<void> => {
-  await connectWithRetry();
+const setup = async (): Promise<void> => {
+  // Connect with indefinite retry
+  for (let attempt = 1; ; attempt++) {
+    try {
+      connection = await amqplib.connect(config.rabbitmq.url);
+      break;
+    } catch {
+      console.warn(`[rabbitmq] Broker not ready (attempt ${attempt}) — retrying in ${RETRY_DELAY_MS / 1000}s`);
+      await sleep(RETRY_DELAY_MS);
+    }
+  }
+
+  // Register handlers immediately after connect — before any channel work.
+  // This way, if anything below throws and we close the connection, scheduleReconnect
+  // fires and the isReconnecting guard prevents a double-reconnect.
+  connection.on('close', scheduleReconnect);
+  connection.on('error', (err: Error) => {
+    // 'close' always fires after 'error' — reconnect logic lives in scheduleReconnect
+    console.warn('[rabbitmq] Connection error:', err.message);
+  });
 
   smsChannel  = await connection.createChannel();
   mailChannel = await connection.createChannel();
@@ -86,18 +92,36 @@ export const initRabbitMQ = async (): Promise<void> => {
   await startMailSubscriber(mailChannel);
 
   console.warn('[rabbitmq] Connected — smsChannel and mailChannel consuming');
+};
 
-  // Reconnect automatically on unexpected broker disconnect
-  connection.on('close', () => {
-    if (isShuttingDown) return;
-    console.warn('[rabbitmq] Connection lost — reconnecting...');
-    setTimeout(() => { void initRabbitMQ(); }, RETRY_DELAY_MS);
-  });
+/**
+ * Called when the connection closes unexpectedly. Retries setup() indefinitely
+ * until the broker is back. isReconnecting prevents concurrent attempts.
+ */
+const scheduleReconnect = (): void => {
+  if (isShuttingDown || isReconnecting) return;
+  isReconnecting = true;
+  console.warn('[rabbitmq] Connection lost — reconnecting...');
 
-  connection.on('error', (err: Error) => {
-    // 'close' will fire after 'error' — reconnect logic lives there
-    console.warn('[rabbitmq] Connection error:', err.message);
-  });
+  void (async () => {
+    for (;;) {
+      await sleep(RETRY_DELAY_MS);
+      try {
+        await setup();
+        isReconnecting = false;
+        return;
+      } catch (err) {
+        console.warn('[rabbitmq] Reconnect attempt failed:', (err as Error).message);
+        // setup() got a connection but failed during channel/topology setup — close
+        // the leaked connection. The close event fires but isReconnecting guards it.
+        try { await connection?.close(); } catch { /* already closed */ }
+      }
+    }
+  })();
+};
+
+export const initRabbitMQ = async (): Promise<void> => {
+  await setup();
 };
 
 export const closeRabbitMQ = async (): Promise<void> => {

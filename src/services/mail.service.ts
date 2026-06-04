@@ -62,6 +62,8 @@ export const MailService = {
     let attempts = 0;
     let lastError: string | undefined;
 
+    let deliveryError: (Error & { attempts?: number }) | undefined;
+
     try {
       const { result, attempts: a } = await withRetry(
         () => sendViaResend(recipient, subject, html),
@@ -73,32 +75,28 @@ export const MailService = {
       const e = err as Error & { attempts?: number };
       lastError = e.message;
       attempts = e.attempts ?? 3;
+      deliveryError = e;
+    }
 
+    // Logging is best-effort — a transient DB/PgBouncer failure must not nack
+    // a message that was already delivered (or already failed delivery).
+    try {
       await prisma.notificationLog.create({
         data: {
           channel: 'mail',
           type: event.type,
           recipient,
-          status: 'dead',
+          status: deliveryError ? 'dead' : 'sent',
           attempts,
           error: lastError,
+          provider_ref: providerRef,
           payload: event as object,
         },
       });
-
-      throw e;
+    } catch (logErr) {
+      console.error('[mail.service] Failed to write notification log', logErr);
     }
 
-    await prisma.notificationLog.create({
-      data: {
-        channel: 'mail',
-        type: event.type,
-        recipient,
-        status: 'sent',
-        attempts,
-        provider_ref: providerRef,
-        payload: event as object,
-      },
-    });
+    if (deliveryError) throw deliveryError;
   },
 };
