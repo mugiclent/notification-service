@@ -25,6 +25,16 @@ type SmsLocaleStrings = {
     cooperative_approved: (org: string) => string;
     contact_verified: (org: string) => string;
   };
+  trip: {
+    ticket_confirmed: (a: {
+      name: string;
+      origin: string;
+      destination: string;
+      departure: string;
+      seats: number;
+      ref: string;
+    }) => string;
+  };
 };
 
 // ── Translations ───────────────────────────────────────────────────────────────
@@ -70,6 +80,10 @@ const translations: Record<Locale, SmsLocaleStrings> = {
       contact_verified: (org) =>
         `Nomero ikoreshwa na ${org} yemejwe kuri Katisha. Niyo muzajya mubonaho amakuru y'ingenzi yerekeye ${org}.`,
     },
+    trip: {
+      ticket_confirmed: (a) =>
+        `Muraho ${a.name}, itike yawe ya Katisha yemejwe! ${a.origin} > ${a.destination}, ${a.departure}, imyanya ${a.seats}. Nimero y'itike: ${a.ref}. Urugendo rwiza, kandi murakoze gukoresha Katisha!`,
+    },
   },
 
   // ── English ──────────────────────────────────────────────────────────────────
@@ -111,6 +125,10 @@ const translations: Record<Locale, SmsLocaleStrings> = {
       contact_verified: (org) =>
         `The contact for ${org} has been verified on Katisha.`,
     },
+    trip: {
+      ticket_confirmed: (a) =>
+        `Hi ${a.name}, your Katisha ticket is confirmed! ${a.origin} > ${a.destination}, ${a.departure}, ${a.seats} seat(s). Ticket ref: ${a.ref}. Safe journey, and thank you for booking with Katisha!`,
+    },
   },
 
   // ── French ───────────────────────────────────────────────────────────────────
@@ -151,6 +169,10 @@ const translations: Record<Locale, SmsLocaleStrings> = {
         `Bonne nouvelle ! ${org} a été approuvée en tant que coopérative sur Katisha. Connectez-vous pour commencer.`,
       contact_verified: (org) =>
         `Le contact de ${org} a été vérifié sur Katisha.`,
+    },
+    trip: {
+      ticket_confirmed: (a) =>
+        `Bonjour ${a.name}, votre billet Katisha est confirmé ! ${a.origin} > ${a.destination}, ${a.departure}, ${a.seats} place(s). Réf. billet : ${a.ref}. Bon voyage et merci d'avoir réservé avec Katisha !`,
     },
   },
 };

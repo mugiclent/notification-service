@@ -28,6 +28,18 @@ export type SmsEvent = (
   | { type: 'org.rejected'; phone_number: string; org_name: string; reason?: string }
   | { type: 'org.cooperative_approved'; phone_number: string; org_name: string }
   | { type: 'org.contact_verified'; phone_number: string; org_name: string }
+  // ── Trip / ticketing ──────────────────────────────────────────────────────
+  | {
+      type: 'trip.ticket_confirmed';
+      phone_number: string;
+      passenger_name: string;
+      origin: string;
+      destination: string;
+      departure_at: string; // ISO 8601
+      seats_count: number;
+      ticket_ref: string;
+      tax_receipt_no?: string;
+    }
 ) & { locale?: Locale };
 
 export type MailEvent = (

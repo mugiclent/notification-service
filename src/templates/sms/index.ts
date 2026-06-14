@@ -5,6 +5,7 @@ import { renderInviteSms } from './invite.js';
 import { renderOrgApprovedSms } from './org-approved.js';
 import { renderSecuritySms } from './security.js';
 import { renderOrgSms } from './org.js';
+import { renderTripSms } from './trip.js';
 
 /**
  * Dispatch an SMS event to the correct template function.
@@ -39,5 +40,8 @@ export const renderSms = (event: SmsEvent): string => {
     case 'org.cooperative_approved':
     case 'org.contact_verified':
       return renderOrgSms(event);
+
+    case 'trip.ticket_confirmed':
+      return renderTripSms(event);
   }
 };
